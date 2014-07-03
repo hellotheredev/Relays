@@ -31,12 +31,12 @@ namespace Relays
 			return recievers.Contains(receiver);
 		}
 
-		public void Transmit(object transmitter, TPackage package)
+		public void AddTransmission(object transmitter, TPackage package)
 		{
-			Transmit(transmitter, package, RequireReceivers.No);
+			AddTransmission(transmitter, package, RequireReceivers.No);
 		}
 
-		public void Transmit(object transmitter, TPackage package, RequireReceivers requireReceivers)
+		public void AddTransmission(object transmitter, TPackage package, RequireReceivers requireReceivers)
 		{
 			if(requireReceivers == RequireReceivers.One && recievers.Count != 1)
 				Error("Transmission from {0} required one receiver and there were {1}", transmitter, recievers.Count);
@@ -44,7 +44,21 @@ namespace Relays
 			if(requireReceivers == RequireReceivers.Yes && recievers.Count == 0)
 				Error("Transmission from {0} required recievers and there were none", transmitter);
 
-			recievers.ForEach((receiver) => receiver(transmitter, package));
+			transmissions.Enqueue(new Transmission()
+			{
+				Transmitter = transmitter,
+				Package = package
+			});
+		}
+
+		public void Transmit()
+		{
+			while(transmissions.Count > 0)
+			{
+				Transmission transmission = transmissions.Dequeue();
+
+				recievers.ForEach((receiver) => receiver(transmission.Transmitter, transmission.Package));
+			}
 		}
 
 		private static void Error(string formattedString, params object[] values)
@@ -53,6 +67,13 @@ namespace Relays
 		}
 
 		private List<System.Action<object, TPackage>> recievers = new List<System.Action<object, TPackage>>();
+		private Queue<Transmission> transmissions = new Queue<Transmission>();
+
+		private struct Transmission
+		{
+			public object Transmitter;
+			public TPackage Package;
+		}
 
 	}
 
