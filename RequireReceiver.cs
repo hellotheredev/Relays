@@ -1,7 +1,7 @@
 ﻿namespace Relays
 {
 
-	public enum RequireReceivers
+	public enum RequireReceiver
 	{
 		No, One, Yes
 	}
