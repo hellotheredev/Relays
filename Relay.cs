@@ -65,6 +65,11 @@ namespace Relays
 			}
 		}
 
+		public void Clear()
+		{
+			transmissions.Clear();
+		}
+
 		private static void Error(string formattedString, params object[] values)
 		{
 			throw new System.Exception(string.Format(formattedString, values));
