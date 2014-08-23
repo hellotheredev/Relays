@@ -20,6 +20,7 @@ namespace Views
 
 			if ((elements = GetElement<Canvas> ("*/Elements")) != null) {
 				elements.renderMode = RenderMode.Overlay;
+				elements.pixelPerfect = true;
 			}
 			    
 			transitionIn = GetElement<SequencePlayer> ("*/Transitions/In");
