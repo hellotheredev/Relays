@@ -12,90 +12,115 @@ namespace Views
 
 	using ViewDictionary = System.Collections.Generic.Dictionary<Type, View>;
 
-	public class ViewCollection : PVMonoBehaviour
+	public class ViewCollection : PVMonoBehaviour, IDisposableObject
 	{
 
-		protected override void OnValidation(OperationResultHandler resultHandler)
+		private ViewDictionary viewDictionary = new ViewDictionary ();
+
+		#region PVMonoBehaviour implementation
+
+		protected override void OnValidation (OperationResultHandler resultHandler)
 		{
-			viewDictionary = new ViewDictionary();
+			viewDictionary.Clear ();
 
-			AssertField<ViewRelay>(Relay, "View Relay");
+			foreach (View view in GetComponentsInChildren<View>()) {
+				Type viewType = view.GetType ();
 
-			foreach(View view in GetComponentsInChildren<View>())
-			{
-				if(view.Relay != Relay)
-				{
-					Debug.LogWarning(string.Format("Changed Relay of {0} to {1}.", view.name, Relay.name));
-
-					view.Relay = Relay;
-				}
-
-				Type viewType = view.GetType();
-
-				if(AssertTrue(!viewDictionary.ContainsKey(viewType), "There can only be one {0}.", viewType.ToString()))
-				{
-					viewDictionary.Add(view.GetType(), view);
+				if (AssertTrue (!viewDictionary.ContainsKey (viewType), "There can only be one {0}.", viewType.ToString ())) {
+					viewDictionary.Add (view.GetType (), view);
 				}
 			}
 		}
 
-		private void Start()
-		{
-			HideAll(true);
-		}
+		#endregion
 
-		private void AssertHasView(Type viewType)
+		#region IDisposableObject implementation
+
+		public void Dispose ()
 		{
-			if(!viewDictionary.ContainsKey(viewType))
-			{
-				throw new Exception("There are no views of type: " + viewType.ToString());
+			isDisposed = true;
+
+			foreach (View view in viewDictionary.Values) {
+				view.Dispose ();
 			}
 		}
 
-		public void Show<TView>()
+		public bool isDisposed { get; private set; }
+
+		#endregion
+
+		private void Start ()
 		{
-			Show<TView>(false);
+			HideAll (true);
 		}
 
-		public void Show<TView>(bool instantTransition)
+		#region Control views
+
+		private bool HasView<TView> ()
 		{
-			Type viewType = typeof(TView);
-
-			AssertHasView(viewType);
-
-			Relay.AddViewTransmission(viewDictionary[viewType], ViewEvent.Show, instantTransition);
-			Relay.Transmit();
+			return viewDictionary.ContainsKey (typeof(TView));
 		}
 
-		public void Hide<TView>()
-		{
-			Hide<TView>(false);
-		}
-
-		public void Hide<TView>(bool instantTransition)
+		public bool TryGetView<TView> (out TView view) where TView : View
 		{
 			Type viewType = typeof(TView);
 
-			AssertHasView(viewType);
-
-			Relay.AddViewTransmission(viewDictionary[viewType], ViewEvent.Hide, instantTransition);
-			Relay.Transmit();
+			if (HasView<TView> ()) {
+				view = viewDictionary [viewType] as TView;
+				return true;
+			} else {
+				view = default(TView);
+				return false;
+			}
 		}
 
-		public void HideAll()
+		public TView Show<TView> () where TView : View
 		{
-			HideAll(false);
+			return Show<TView> (false);
 		}
 
-		public void HideAll(bool instantTransition)
+		public TView Show<TView> (bool instantTransition) where TView : View
 		{
-			Relay.AddViewTransmission(null, ViewEvent.HideAll, instantTransition);
-			Relay.Transmit();
+			TView view = default(TView);
+
+			if (TryGetView<TView> (out view)) {
+				view.Show (instantTransition);
+			} else {
+				Debug.LogError ("There are no views of type " + typeof(TView).ToString ());
+			}
+
+			return view;
 		}
 
-		private ViewDictionary viewDictionary;
+		public void Hide<TView> () where TView : View
+		{
+			Hide<TView> (false);
+		}
 
-		public ViewRelay Relay;
+		public void Hide<TView> (bool instantTransition) where TView : View
+		{
+			TView view;
+
+			if (TryGetView<TView> (out view)) {
+				view.Hide (instantTransition);
+			} else {
+				Debug.LogError ("There are no views of type " + typeof(TView).ToString ());
+			}
+		}
+
+		public void HideAll ()
+		{
+			HideAll (false);
+		}
+
+		public void HideAll (bool instantTransition)
+		{
+			foreach (View view in viewDictionary.Values) {
+				view.Hide (instantTransition);
+			}
+		}
+
+		#endregion
 
 	}
 

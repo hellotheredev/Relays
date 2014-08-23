@@ -3,101 +3,91 @@
 using HelloThere.InCommon;
 using HelloThere.ProgrammableValidation;
 
-using Sekund;
+using Sequences;
 using Relays;
 
 namespace Views
 {
 
-	public abstract class View : PVMonoBehaviour
+	public abstract class View : PVMonoBehaviour, IDisposableObject
 	{
 
-		protected override void OnValidation(OperationResultHandler resultHandler)
+		#region PVMonoBehaviour implementation
+
+		protected override void OnValidation (OperationResultHandler resultHandler)
 		{
-			gameObject.name = GetType().ToString();
+			gameObject.name = GetType ().ToString ();
 
-			Camera = GetElement<Camera>();
-
-			transitionIn = GetElement<CommonPlaybackBehaviour>("*/Transitions/In");
-			transitionOut = GetElement<CommonPlaybackBehaviour>("*/Transitions/Out");
-
-			if(transitionIn != null && transitionIn is SekundPlayer)
-				(transitionIn as SekundPlayer).filterRoot = transform;
-
-			if(transitionOut != null && transitionOut is SekundPlayer)
-				(transitionOut as SekundPlayer).filterRoot = transform;
-
-			if(AssertField<ViewRelay>(Relay, "Relay") && !Relay.HasReceiver(OnTransmission))
-			{
-				Relay.AddReceiver(OnTransmission);
+			if ((elements = GetElement<Canvas> ("*/Elements")) != null) {
+				elements.renderMode = RenderMode.Overlay;
 			}
+			    
+			transitionIn = GetElement<SequencePlayer> ("*/Transitions/In");
+			transitionOut = GetElement<SequencePlayer> ("*/Transitions/Out");
 
-			OnValidateView(resultHandler);
+			OnValidateView (resultHandler);
 		}
 
-		protected abstract void OnValidateView(OperationResultHandler resultHandler);
+		protected abstract void OnValidateView (OperationResultHandler resultHandler);
 
-		private void OnTransmission(object transmitter, ViewPackage package)
+		#endregion
+
+		#region IDisposableObject implementation
+
+		public void Dispose ()
 		{
-			if(package.Event == ViewEvent.HideAll)
-			{
-				Hide(package.InstantTransition);
-			}
-			else
-			{
-				if(package.View == this)
-				{
-					if(package.Event == ViewEvent.Show) Show(package.InstantTransition);
-					if(package.Event == ViewEvent.Hide) Hide(package.InstantTransition);
-				}
-			}
+			isDisposed = true;
+
+			OnDisposeView ();
 		}
 
-		public void Show(bool instantTransition)
+		protected abstract void OnDisposeView ();
+
+		public bool isDisposed { get; private set; }
+
+		#endregion
+
+		public void Show (bool instantTransition)
 		{
-			Camera.enabled = true;
+			elements.enabled = true;
 
-			Transition(transitionIn, instantTransition, null);
+			Transition (transitionIn, instantTransition, null);
 
-			OnShow();
+			OnShow ();
 		}
 
-		public void Hide(bool instantTransition)
+		public void Hide (bool instantTransition)
 		{
-			OnHide();
+			OnHide ();
 
-			Transition(transitionOut, instantTransition, () =>{ camera.enabled = false; });
+			Transition (transitionOut, instantTransition, () => {
+				elements.enabled = false;
+			});
 		}
 
-		private void Transition(ICommonPlayback transition, bool instant, System.Action onComplete)
+		private void Transition (SequencePlayer transition, bool instant, System.Action onComplete)
 		{
-			transitionIn.Cancel();
-			transitionOut.Cancel();
+			transitionIn.Stop ();
+			transitionOut.Stop ();
 
-			if(instant)
-			{
-				transition.normalizedPosition = 1;
+			if (instant) {
+				transition.SampleEnd ();
 				
-				if(onComplete != null)
-					onComplete();
-			}
-			else
-			{
-				transition.position = 0;
-				transition.Play(onComplete);
+				if (onComplete != null)
+					onComplete ();
+			} else {
+				transition.SampleStart ();
+				transition.Play (onComplete);
 			}
 		}
 
-		[HideInInspector]
-		public	Camera Camera;
+		private Canvas elements;
+		private SequencePlayer transitionIn;
+		private SequencePlayer transitionOut;
 
-		private CommonPlaybackBehaviour transitionIn;
-		private CommonPlaybackBehaviour transitionOut;
+		protected abstract void OnShow ();
 
-		protected abstract void OnShow();
-		protected abstract void OnHide();
-
-		public ViewRelay Relay;
+		protected abstract void OnHide ();
 
 	}
 
