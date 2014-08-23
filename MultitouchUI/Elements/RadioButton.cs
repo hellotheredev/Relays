@@ -49,7 +49,7 @@ namespace MultitouchUI
 
 			if(package.Event == UIEvents.Selected)
 			{
-				if(transmitter == this)
+				if(transmitter as RadioButton == this)
 				{
 					sequencePlayer = OnSelected;
 				}
