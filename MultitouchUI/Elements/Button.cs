@@ -18,7 +18,7 @@ namespace MultitouchUI
 		{
 			base.OnReleaseInside(fingerSession);
 
-			Relay.AddUITransmission(this, UIEvents.Clicked, Option, RequireReceiver);
+			Relay.AddUITransmission(this, UIEventTypes.Clicked, Option, RequireReceiver);
 		}
 
 		public ScriptableObject Option;

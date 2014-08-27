@@ -14,48 +14,48 @@ namespace Relays.UI
 
 		#region AddUITransmission
 
-		public void AddUITransmission (object transmitter, Events uiEvent)
+		public void AddUITransmission (object transmitter, EventTypes uiEvent)
 		{
 			AddUITransmission (transmitter, uiEvent, null, false, RequireReceiver.No);
 		}
 
-		public void AddUITransmission (object transmitter, Events uiEvent, bool immediateStateChange)
+		public void AddUITransmission (object transmitter, EventTypes uiEvent, bool immediateStateChange)
 		{
 			AddUITransmission (transmitter, uiEvent, null, immediateStateChange, RequireReceiver.No);
 		}
 
-		public void AddUITransmission (object transmitter, Events uiEvent, RequireReceiver requireReceiver)
+		public void AddUITransmission (object transmitter, EventTypes uiEvent, RequireReceiver requireReceiver)
 		{
 			AddUITransmission (transmitter, uiEvent, null, false, requireReceiver);
 		}
 
-		public void AddUITransmission (object transmitter, Events uiEvent, ScriptableObject option)
+		public void AddUITransmission (object transmitter, EventTypes uiEvent, ScriptableObject option)
 		{
 			AddUITransmission (transmitter, uiEvent, option, false, RequireReceiver.No);
 		}
 
-		public void AddUITransmission (object transmitter, Events uiEvent, ScriptableObject option, bool immediateStateChange)
+		public void AddUITransmission (object transmitter, EventTypes uiEvent, ScriptableObject option, bool immediateStateChange)
 		{
 			AddUITransmission (transmitter, uiEvent, option, immediateStateChange, RequireReceiver.No);
 		}
 
-		public void AddUITransmission (object transmitter, Events uiEvent, ScriptableObject option, RequireReceiver requireReceiver)
+		public void AddUITransmission (object transmitter, EventTypes uiEvent, ScriptableObject option, RequireReceiver requireReceiver)
 		{
 			AddUITransmission (transmitter, uiEvent, option, false, requireReceiver);
 		}
 
-		public void AddUITransmission (object transmitter, Events uiEvent, ScriptableObject option, bool immediateStateChange, RequireReceiver requireReceiver)
+		public void AddUITransmission (object transmitter, EventTypes uiEvent, ScriptableObject option, bool immediateStateChange, RequireReceiver requireReceiver)
 		{
 			AddTransmission (transmitter, new Package () {
-				Event = uiEvent,
-				Option = option,
-				ImmediateStateChange = immediateStateChange
+				eventType = uiEvent,
+				option = option,
+				immediateStateChange = immediateStateChange
 			}, requireReceiver);
 		}
 
 		#endregion
 
-		public enum Events
+		public enum EventTypes
 		{
 			Clicked,
 			Selected,
@@ -64,9 +64,9 @@ namespace Relays.UI
 		   
 		public struct Package
 		{
-			public Events Event;
-			public ScriptableObject Option;
-			public bool ImmediateStateChange;
+			public EventTypes eventType;
+			public ScriptableObject option;
+			public bool immediateStateChange;
 		}
 
 	}

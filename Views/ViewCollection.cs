@@ -10,6 +10,7 @@ using Relays;
 namespace Views
 {
 
+	using Action = System.Action;
 	using ViewDictionary = System.Collections.Generic.Dictionary<Type, View>;
 
 	public class ViewCollection : PVMonoBehaviour, IDisposableObject
@@ -74,17 +75,17 @@ namespace Views
 			}
 		}
 
-		public TView Show<TView> () where TView : View
+		public TView Show<TView> (Action onComplete) where TView : View
 		{
-			return Show<TView> (false);
+			return Show<TView> (false, onComplete);
 		}
 
-		public TView Show<TView> (bool instantTransition) where TView : View
+		public TView Show<TView> (bool instantTransition, Action onComplete) where TView : View
 		{
 			TView view = default(TView);
 
 			if (TryGetView<TView> (out view)) {
-				view.Show (instantTransition);
+				view.Show (instantTransition, onComplete);
 			} else {
 				Debug.LogError ("There are no views of type " + typeof(TView).ToString ());
 			}
@@ -92,17 +93,17 @@ namespace Views
 			return view;
 		}
 
-		public void Hide<TView> () where TView : View
+		public void Hide<TView> (Action onComplete) where TView : View
 		{
-			Hide<TView> (false);
+			Hide<TView> (false, onComplete);
 		}
 
-		public void Hide<TView> (bool instantTransition) where TView : View
+		public void Hide<TView> (bool instantTransition, Action onComplete) where TView : View
 		{
 			TView view;
 
 			if (TryGetView<TView> (out view)) {
-				view.Hide (instantTransition);
+				view.Hide (instantTransition, onComplete);
 			} else {
 				Debug.LogError ("There are no views of type " + typeof(TView).ToString ());
 			}
@@ -116,7 +117,7 @@ namespace Views
 		public void HideAll (bool instantTransition)
 		{
 			foreach (View view in viewDictionary.Values) {
-				view.Hide (instantTransition);
+				view.Hide (instantTransition, null);
 			}
 		}
 

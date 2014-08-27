@@ -40,14 +40,14 @@ namespace MultitouchUI
 		{
 			base.OnReleaseInside(fingerSession);
 
-			Relay.AddUITransmission(this, UIEvents.Selected, Option, RequireReceiver);
+			Relay.AddUITransmission(this, UIEventTypes.Selected, Option, RequireReceiver);
 		}
 
 		void OnTransmission(object transmitter, UIPackage package)
 		{
 			SequencePlayer sequencePlayer = null;
 
-			if(package.Event == UIEvents.Selected)
+			if(package.eventType == UIEventTypes.Selected)
 			{
 				if(transmitter as RadioButton == this)
 				{
@@ -57,10 +57,10 @@ namespace MultitouchUI
 				{
 					sequencePlayer = OnDeselected;
 
-					Relay.AddUITransmission(this, UIEvents.Deselected, Option);
+					Relay.AddUITransmission(this, UIEventTypes.Deselected, Option);
 				}
 
-				if(package.ImmediateStateChange)
+				if(package.immediateStateChange)
 				{
 					sequencePlayer.SampleEnd();
 				}

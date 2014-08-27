@@ -12,43 +12,43 @@ namespace MultitouchUI
 	public class UIRelay : Relay<UIPackage>
 	{
 
-		public void AddUITransmission(object transmitter, UIEvents uiEvent)
+		public void AddUITransmission(object transmitter, UIEventTypes uiEvent)
 		{
 			AddUITransmission(transmitter, uiEvent, null, false, RequireReceiver.No);
 		}
 
-		public void AddUITransmission(object transmitter, UIEvents uiEvent, bool immediateStateChange)
+		public void AddUITransmission(object transmitter, UIEventTypes uiEvent, bool immediateStateChange)
 		{
 			AddUITransmission(transmitter, uiEvent, null, immediateStateChange, RequireReceiver.No);
 		}
 
-		public void AddUITransmission(object transmitter, UIEvents uiEvent, RequireReceiver requireReceiver)
+		public void AddUITransmission(object transmitter, UIEventTypes uiEvent, RequireReceiver requireReceiver)
 		{
 			AddUITransmission(transmitter, uiEvent, null, false, requireReceiver);
 		}
 
-		public void AddUITransmission(object transmitter, UIEvents uiEvent, ScriptableObject option)
+		public void AddUITransmission(object transmitter, UIEventTypes uiEvent, ScriptableObject option)
 		{
 			AddUITransmission(transmitter, uiEvent, option, false, RequireReceiver.No);
 		}
 
-		public void AddUITransmission(object transmitter, UIEvents uiEvent, ScriptableObject option, bool immediateStateChange)
+		public void AddUITransmission(object transmitter, UIEventTypes uiEvent, ScriptableObject option, bool immediateStateChange)
 		{
 			AddUITransmission(transmitter, uiEvent, option, immediateStateChange, RequireReceiver.No);
 		}
 
-		public void AddUITransmission(object transmitter, UIEvents uiEvent, ScriptableObject option, RequireReceiver requireReceiver)
+		public void AddUITransmission(object transmitter, UIEventTypes uiEvent, ScriptableObject option, RequireReceiver requireReceiver)
 		{
 			AddUITransmission(transmitter, uiEvent, option, false, requireReceiver);
 		}
 
-		public void AddUITransmission(object transmitter, UIEvents uiEvent, ScriptableObject option, bool immediateStateChange, RequireReceiver requireReceiver)
+		public void AddUITransmission(object transmitter, UIEventTypes uiEvent, ScriptableObject option, bool immediateStateChange, RequireReceiver requireReceiver)
 		{
 			AddTransmission(transmitter, new UIPackage()
 			{
-				Event = uiEvent,
-				Option = option,
-				ImmediateStateChange = immediateStateChange
+				eventType = uiEvent,
+				option = option,
+				immediateStateChange = immediateStateChange
 			}, requireReceiver);
 		}
 
@@ -56,12 +56,12 @@ namespace MultitouchUI
 
 	public struct UIPackage
 	{
-		public UIEvents Event;
-		public ScriptableObject Option;
-		public bool ImmediateStateChange;
+		public UIEventTypes eventType;
+		public ScriptableObject option;
+		public bool immediateStateChange;
 	}
 
-	public enum UIEvents
+	public enum UIEventTypes
 	{
 		Clicked,
 		Selected,

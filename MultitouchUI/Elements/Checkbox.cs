@@ -42,11 +42,11 @@ namespace MultitouchUI
 
 			if(selected)
 			{
-				Relay.AddUITransmission(this, UIEvents.Deselected);
+				Relay.AddUITransmission(this, UIEventTypes.Deselected);
 			}
 			else
 			{
-				Relay.AddUITransmission(this, UIEvents.Selected);
+				Relay.AddUITransmission(this, UIEventTypes.Selected);
 			}
 		}
 
@@ -54,20 +54,20 @@ namespace MultitouchUI
 		{
 			SequencePlayer sequencePlayer = null;
 
-			switch(package.Event)
+			switch(package.eventType)
 			{
-				case UIEvents.Selected:
+				case UIEventTypes.Selected:
 					sequencePlayer = OnSelected;
 					break;
 
-				case UIEvents.Deselected:
+				case UIEventTypes.Deselected:
 					sequencePlayer = OnDeselected;
 					break;
 			}
 
 			if(sequencePlayer != null)
 			{
-				if(package.ImmediateStateChange)
+				if(package.immediateStateChange)
 				{
 					sequencePlayer.SampleEnd();
 				}

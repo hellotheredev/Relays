@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 using HelloThere.InCommon;
 using HelloThere.ProgrammableValidation;
@@ -8,6 +9,8 @@ using Relays;
 
 namespace Views
 {
+
+	using Action = System.Action;
 
 	public abstract class View : PVMonoBehaviour, IDisposableObject
 	{
@@ -22,6 +25,8 @@ namespace Views
 				elements.renderMode = RenderMode.Overlay;
 				elements.pixelPerfect = true;
 			}
+
+			GetElement<GraphicRaycaster> ("*/Elements");
 			    
 			transitionIn = GetElement<SequencePlayer> ("*/Transitions/In");
 			transitionOut = GetElement<SequencePlayer> ("*/Transitions/Out");
@@ -48,25 +53,28 @@ namespace Views
 
 		#endregion
 
-		public void Show (bool instantTransition)
+		public void Show (bool instantTransition, Action onComplete)
 		{
 			elements.enabled = true;
 
-			Transition (transitionIn, instantTransition, null);
+			Transition (transitionIn, instantTransition, onComplete);
 
 			OnShow ();
 		}
 
-		public void Hide (bool instantTransition)
+		public void Hide (bool instantTransition, Action onComplete)
 		{
 			OnHide ();
 
 			Transition (transitionOut, instantTransition, () => {
 				elements.enabled = false;
+
+				if (onComplete != null)
+					onComplete ();
 			});
 		}
 
-		private void Transition (SequencePlayer transition, bool instant, System.Action onComplete)
+		private void Transition (SequencePlayer transition, bool instant, Action onComplete)
 		{
 			transitionIn.Stop ();
 			transitionOut.Stop ();

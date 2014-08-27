@@ -20,8 +20,8 @@ namespace Views
 			if(Application.isPlaying)
 			{
 				GUILayout.BeginHorizontal();
-				if(GUILayout.Button("Show")) view.Show(false);
-				if(GUILayout.Button("Hide")) view.Hide(false);
+				if(GUILayout.Button("Show")) view.Show(false, null);
+				if(GUILayout.Button("Hide")) view.Hide(false, null);
 				GUILayout.EndHorizontal();
 			}
 

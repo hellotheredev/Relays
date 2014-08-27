@@ -18,7 +18,7 @@ namespace Relays.UI
 
 		public override void OnPointerClick (PointerEventData eventData)
 		{
-			relay.AddUITransmission(this, UIRelay.Events.Clicked, Option, requireReceiver);
+			relay.AddUITransmission(this, UIRelay.EventTypes.Clicked, Option, requireReceiver);
 			relay.Transmit ();
 
 			base.OnPointerClick (eventData);
